@@ -68,7 +68,7 @@ const [subscribe, getSnapshot, setOpen] = createExternalStore(isNewPlayer())
 
 export const setNameDrawerDialogOpen = setOpen
 
-export function NameDrawerDialog() {
+export default function NameDrawerDialog() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

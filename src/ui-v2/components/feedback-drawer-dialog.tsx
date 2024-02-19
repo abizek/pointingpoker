@@ -45,7 +45,7 @@ const [subscribe, getSnapshot, setOpen] = createExternalStore(false)
 
 export const setFeedbackDrawerDialogOpen = setOpen
 
-export function FeedbackDrawerDialog() {
+export default function FeedbackDrawerDialog() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

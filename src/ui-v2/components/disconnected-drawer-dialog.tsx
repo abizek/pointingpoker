@@ -6,7 +6,7 @@ import { setupReconnection } from "@/utils/rtdb"
 import { useMedia } from "react-use"
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "./ui/drawer"
 
-export function DisconnectedDrawerDialog() {
+export default function DisconnectedDrawerDialog() {
   const [open, setOpen] = useState(false)
   const isDesktop = useMedia("(min-width: 768px)")
 

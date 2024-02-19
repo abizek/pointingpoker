@@ -31,7 +31,7 @@ const [subscribe, getSnapshot, setOpen] = createExternalStore(false)
 
 export const setVoteOptionsDrawerDialogOpen = setOpen
 
-export function VoteOptionsDrawerDialog() {
+export default function VoteOptionsDrawerDialog() {
   const open = useSyncExternalStore(subscribe, getSnapshot)
   const { voteOptionsList, selectedVoteOptionsKey } = useStore()
   const [currentSelectedKey, setCurrentSelectedKey] = useState(

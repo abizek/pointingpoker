@@ -41,7 +41,7 @@ function NavButton({ children, onClick, tooltipContent }: NavButtonProps) {
   )
 }
 
-export function Nav() {
+export default function Nav() {
   const { theme, setNextTheme } = useTheme()
   const isDesktop = useMedia("(min-width: 768px)")
 

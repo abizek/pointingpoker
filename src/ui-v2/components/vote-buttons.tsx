@@ -5,7 +5,7 @@ import { MoreDropdownMenu } from "./more-dropdown-menu"
 import { Separator } from "./ui/separator"
 import { useMedia } from "react-use"
 
-export function VoteButtons() {
+export default function VoteButtons() {
   const { voteOptionsList, selectedVoteOptionsKey } = useStore()
   const isDesktop = useMedia("(min-width: 768px)")
 

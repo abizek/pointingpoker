@@ -4,17 +4,27 @@ import { useWindowSize } from "react-use"
 import { useVoteStats } from "@/hooks/vote-stats"
 import { useLoading } from "@/hooks/loading"
 import { cn } from "@/utils/cn"
-import { Nav } from "./components/nav"
-import { VoteButtons } from "./components/vote-buttons"
-import { DisconnectedDrawerDialog } from "./components/disconnected-drawer-dialog"
-import { NameDrawerDialog } from "./components/name-drawer-dialog"
-import { VoteOptionsDrawerDialog } from "./components/vote-options-drawer-dialog"
-import { Votes } from "./components/votes"
 import { ThemeProvider } from "./components/theme-provider"
-import { FeedbackDrawerDialog } from "./components/feedback-drawer-dialog"
-import { GraphSkeletonLoader } from "./components/skeleton-loader"
+import {
+  AppContentSkeletonLoader,
+  GraphSkeletonLoader,
+  NavSkeletonLoader,
+} from "./components/skeleton-loader"
 
+const Nav = lazy(() => import("./components/nav"))
+const VoteButtons = lazy(() => import("./components/vote-buttons"))
+const Votes = lazy(() => import("./components/votes"))
 const VotesGraph = lazy(() => import("./components/votes-graph"))
+const DisconnectedDrawerDialog = lazy(
+  () => import("./components/disconnected-drawer-dialog"),
+)
+const NameDrawerDialog = lazy(() => import("./components/name-drawer-dialog"))
+const VoteOptionsDrawerDialog = lazy(
+  () => import("./components/vote-options-drawer-dialog"),
+)
+const FeedbackDrawerDialog = lazy(
+  () => import("./components/feedback-drawer-dialog"),
+)
 
 export default function UIV2() {
   const { width, height } = useWindowSize()
@@ -46,14 +56,18 @@ export default function UIV2() {
           loading && "cursor-progress",
         )}
       >
-        <Nav />
-        <div className="flex flex-col gap-6 my-8 mx-4 max-w-xl">
-          <VoteButtons />
-          <Votes />
-          <Suspense fallback={<GraphSkeletonLoader />}>
-            <VotesGraph />
-          </Suspense>
-        </div>
+        <Suspense fallback={<NavSkeletonLoader />}>
+          <Nav />
+        </Suspense>
+        <Suspense fallback={<AppContentSkeletonLoader />}>
+          <div className="flex flex-col gap-6 my-8 mx-4 max-w-xl">
+            <VoteButtons />
+            <Votes />
+            <Suspense fallback={<GraphSkeletonLoader />}>
+              <VotesGraph />
+            </Suspense>
+          </div>
+        </Suspense>
       </div>
       {isConfettiVisible && (
         <Confetti
@@ -63,10 +77,12 @@ export default function UIV2() {
           onConfettiComplete={(confetti) => confetti?.reset()}
         />
       )}
-      <DisconnectedDrawerDialog />
-      <NameDrawerDialog />
-      <VoteOptionsDrawerDialog />
-      <FeedbackDrawerDialog />
+      <Suspense>
+        <DisconnectedDrawerDialog />
+        <NameDrawerDialog />
+        <VoteOptionsDrawerDialog />
+        <FeedbackDrawerDialog />
+      </Suspense>
     </ThemeProvider>
   )
 }

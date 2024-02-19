@@ -5,57 +5,8 @@ import "../styles/globals.css"
 export function SkeletonLoader() {
   return (
     <div className="grid grid-rows-[auto_1fr] place-items-center w-full h-dvh cursor-progress">
-      <div className="flex justify-between items-center gap-y-3 flex-wrap content-center w-full max-w-screen-2xl h-20">
-        <Skeleton className="h-4 w-40 ml-4" />
-        <div className="flex gap-4 mx-4">
-          <Skeleton className="h-7 w-7 rounded-full" />
-          <Skeleton className="h-7 w-7 rounded-full" />
-          <Skeleton className="h-7 w-7 rounded-full" />
-        </div>
-        <Skeleton className="h-px w-full mx-4" />
-      </div>
-      <div className="flex flex-col gap-6 my-8 mx-4 max-w-xl">
-        <div className="flex flex-wrap gap-2">
-          <Skeleton className="h-11 px-8" />
-          <Skeleton className="h-11 px-8" />
-          <Skeleton className="h-11 px-8" />
-          <Skeleton className="h-11 px-8" />
-          <Skeleton className="h-11 px-8" />
-          <Skeleton className="h-11 px-8" />
-          <Skeleton className="h-11 px-8" />
-          <Skeleton className="h-11 px-8" />
-        </div>
-        <Card className="shadow-none">
-          <CardHeader>
-            <CardTitle>
-              <Skeleton className="h-4 w-20" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <div className="grid grid-cols-[25%_2fr_1fr]">
-              <Skeleton className="h-4 w-4 rounded-full justify-self-center mr-4" />
-              <Skeleton className="h-4 w-20 mr-4" />
-              <Skeleton className="h-4 w-4 rounded-full" />
-            </div>
-            <div className="grid grid-cols-[25%_2fr_1fr]">
-              <Skeleton className="h-4 w-4 rounded-full justify-self-center mr-4" />
-              <Skeleton className="h-4 w-20 mr-4" />
-              <Skeleton className="h-4 w-4 rounded-full" />
-            </div>
-            <div className="grid grid-cols-[25%_2fr_1fr]">
-              <Skeleton className="h-4 w-4 rounded-full justify-self-center mr-4" />
-              <Skeleton className="h-4 w-20 mr-4" />
-              <Skeleton className="h-4 w-4 rounded-full" />
-            </div>
-            <div className="grid grid-cols-[25%_2fr_1fr]">
-              <Skeleton className="h-4 w-4 rounded-full justify-self-center mr-4" />
-              <Skeleton className="h-4 w-20 mr-4" />
-              <Skeleton className="h-4 w-4 rounded-full" />
-            </div>
-          </CardContent>
-        </Card>
-        <GraphSkeletonLoader />
-      </div>
+      <NavSkeletonLoader />
+      <AppContentSkeletonLoader />
     </div>
   )
 }
@@ -87,5 +38,66 @@ export function GraphSkeletonLoader() {
         </div>
       </CardContent>
     </Card>
+  )
+}
+
+export function NavSkeletonLoader() {
+  return (
+    <div className="flex justify-between items-center gap-y-3 flex-wrap content-center w-full max-w-screen-2xl h-20">
+      <Skeleton className="h-4 w-40 ml-4" />
+      <div className="flex gap-4 mx-4">
+        <Skeleton className="h-7 w-7 rounded-full" />
+        <Skeleton className="h-7 w-7 rounded-full" />
+        <Skeleton className="h-7 w-7 rounded-full" />
+      </div>
+      <Skeleton className="h-px w-full mx-4" />
+    </div>
+  )
+}
+
+export function AppContentSkeletonLoader() {
+  return (
+    <div className="flex flex-col gap-6 my-8 mx-4 max-w-xl">
+      <div className="flex flex-wrap gap-2">
+        <Skeleton className="h-11 px-8" />
+        <Skeleton className="h-11 px-8" />
+        <Skeleton className="h-11 px-8" />
+        <Skeleton className="h-11 px-8" />
+        <Skeleton className="h-11 px-8" />
+        <Skeleton className="h-11 px-8" />
+        <Skeleton className="h-11 px-8" />
+        <Skeleton className="h-11 px-8" />
+      </div>
+      <Card className="shadow-none">
+        <CardHeader>
+          <CardTitle>
+            <Skeleton className="h-4 w-20" />
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <div className="grid grid-cols-[25%_2fr_1fr]">
+            <Skeleton className="h-4 w-4 rounded-full justify-self-center mr-4" />
+            <Skeleton className="h-4 w-20 mr-4" />
+            <Skeleton className="h-4 w-4 rounded-full" />
+          </div>
+          <div className="grid grid-cols-[25%_2fr_1fr]">
+            <Skeleton className="h-4 w-4 rounded-full justify-self-center mr-4" />
+            <Skeleton className="h-4 w-20 mr-4" />
+            <Skeleton className="h-4 w-4 rounded-full" />
+          </div>
+          <div className="grid grid-cols-[25%_2fr_1fr]">
+            <Skeleton className="h-4 w-4 rounded-full justify-self-center mr-4" />
+            <Skeleton className="h-4 w-20 mr-4" />
+            <Skeleton className="h-4 w-4 rounded-full" />
+          </div>
+          <div className="grid grid-cols-[25%_2fr_1fr]">
+            <Skeleton className="h-4 w-4 rounded-full justify-self-center mr-4" />
+            <Skeleton className="h-4 w-20 mr-4" />
+            <Skeleton className="h-4 w-4 rounded-full" />
+          </div>
+        </CardContent>
+      </Card>
+      <GraphSkeletonLoader />
+    </div>
   )
 }
