@@ -36,13 +36,6 @@ let currentUser: User
 try {
   await asyncQueue.add(() => signInAnonymously(auth))
   currentUser = auth.currentUser as User
-  if (!currentUser.displayName) {
-    await asyncQueue.add(() =>
-      updateProfile(currentUser, {
-        displayName: `player ${currentUser.uid.slice(0, 3)}`,
-      }),
-    )
-  }
 } catch (error) {
   if (error instanceof Error) {
     LogRocket.captureException(error, {
@@ -61,47 +54,57 @@ LogRocket.identify(currentUserId)
 
 const roomRef = ref(db, `rooms/${roomId}`)
 
-// Setup room
-try {
-  const roomSnapshot = await asyncQueue.add(() =>
-    get(child(ref(db), `rooms/${roomId}`)),
-  )
-
-  let updates: Partial<RoomUpdates> = {}
-  if (!roomSnapshot?.exists()) {
-    // Initializing room
-    updates = {
-      endTime: 0,
-      voteOptionsList: {
-        "0": { ...[0.5, 1, 2, 3, 5, 8, 13, 20] },
-        "1": { ...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
-      },
-      selectedVoteOptionsKey: "0",
-    }
-  }
-
-  if (!has(roomSnapshot?.val(), "users")) {
-    // Set startTime if first user to join
-    updates.startTime = serverTimestamp()
-  }
-
-  // Add current user
-  updates[`users/${currentUserId}/name`] = currentUser.displayName as string
-  updates[`users/${currentUserId}/hasVoted`] = false
-  updates[`users/${currentUserId}/vote`] = 0
-
-  await asyncQueue.add(() => update(roomRef, updates))
-} catch (error) {
-  if (error instanceof Error) {
-    LogRocket.captureException(error, {
-      extra: { errorMessage: "Error while setting up room" },
-    })
-  } else {
-    LogRocket.captureMessage("Error while setting up room", {
-      extra: { errorMessage: error as string },
-    })
-  }
-  throw error
-}
-
 export { db, currentUser, currentUserId, roomRef }
+
+;(async () => {
+  try {
+    if (!currentUser.displayName) {
+      await asyncQueue.add(() =>
+      updateProfile(currentUser, {
+        displayName: `player ${currentUser.uid.slice(0, 3)}`,
+      }),
+      )
+    }
+    
+    // Setup room
+    const roomSnapshot = await asyncQueue.add(() =>
+      get(child(ref(db), `rooms/${roomId}`)),
+    )
+
+    let updates: Partial<RoomUpdates> = {}
+    if (!roomSnapshot?.exists()) {
+      // Initializing room
+      updates = {
+        endTime: 0,
+        voteOptionsList: {
+          "0": { ...[0.5, 1, 2, 3, 5, 8, 13, 20] },
+          "1": { ...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+        },
+        selectedVoteOptionsKey: "0",
+      }
+    }
+
+    if (!has(roomSnapshot?.val(), "users")) {
+      // Set startTime if first user to join
+      updates.startTime = serverTimestamp()
+    }
+
+    // Add current user
+    updates[`users/${currentUserId}/name`] = currentUser.displayName as string
+    updates[`users/${currentUserId}/hasVoted`] = false
+    updates[`users/${currentUserId}/vote`] = 0
+
+    await asyncQueue.add(() => update(roomRef, updates))
+  } catch (error) {
+    if (error instanceof Error) {
+      LogRocket.captureException(error, {
+        extra: { errorMessage: "Error while setting up room" },
+      })
+    } else {
+      LogRocket.captureMessage("Error while setting up room", {
+        extra: { errorMessage: error as string },
+      })
+    }
+    throw error
+  }
+})()
