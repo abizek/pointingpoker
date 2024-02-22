@@ -1,20 +1,13 @@
 import { initializeApp } from "@firebase/app"
 import {
   child,
-  connectDatabaseEmulator,
   get,
   getDatabase,
   ref,
   serverTimestamp,
   update,
 } from "@firebase/database"
-import {
-  connectAuthEmulator,
-  getAuth,
-  signInAnonymously,
-  updateProfile,
-  User,
-} from "@firebase/auth"
+import { getAuth, signInAnonymously, updateProfile, User } from "@firebase/auth"
 import { has } from "lodash-es"
 import LogRocket from "logrocket"
 import { asyncQueue } from "../hooks/loading"
@@ -24,48 +17,56 @@ const firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG)
 
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
-const db = getDatabase(app)
+export const db = getDatabase(app)
 
 if (import.meta.env.DEV) {
+  const { connectAuthEmulator } = await import("@firebase/auth")
+  const { connectDatabaseEmulator } = await import("@firebase/database")
+
   connectAuthEmulator(auth, "http://127.0.0.1:9099")
   connectDatabaseEmulator(db, "127.0.0.1", 9001)
 }
 
-let currentUser: User
+export const roomRef = ref(db, `rooms/${roomId}`)
 
-try {
-  await asyncQueue.add(() => signInAnonymously(auth))
-  currentUser = auth.currentUser as User
-} catch (error) {
-  if (error instanceof Error) {
-    LogRocket.captureException(error, {
-      extra: { errorMessage: "Error while signing in anonymously" },
-    })
-  } else {
-    LogRocket.captureMessage("Error while signing in anonymously", {
-      extra: { errorMessage: error as string },
-    })
-  }
-  throw error
+export const user = {
+  get currentUser() {
+    return auth.currentUser as User
+  },
+  get currentUserId() {
+    return this.currentUser.uid
+  },
+  get username() {
+    return this.currentUser.displayName
+  },
 }
-
-const currentUserId = currentUser.uid
-LogRocket.identify(currentUserId)
-
-const roomRef = ref(db, `rooms/${roomId}`)
-
-export { db, currentUser, currentUserId, roomRef }
 
 ;(async () => {
   try {
-    if (!currentUser.displayName) {
+    try {
+      await asyncQueue.add(() => signInAnonymously(auth))
+    } catch (error) {
+      if (error instanceof Error) {
+        LogRocket.captureException(error, {
+          extra: { errorMessage: "Error while signing in anonymously" },
+        })
+      } else {
+        LogRocket.captureMessage("Error while signing in anonymously", {
+          extra: { errorMessage: error as string },
+        })
+      }
+      throw error
+    }
+
+    LogRocket.identify(user.currentUserId)
+    if (!user.username) {
       await asyncQueue.add(() =>
-      updateProfile(currentUser, {
-        displayName: `player ${currentUser.uid.slice(0, 3)}`,
-      }),
+        updateProfile(user.currentUser, {
+          displayName: `player ${user.currentUserId.slice(0, 3)}`,
+        }),
       )
     }
-    
+
     // Setup room
     const roomSnapshot = await asyncQueue.add(() =>
       get(child(ref(db), `rooms/${roomId}`)),
@@ -90,9 +91,9 @@ export { db, currentUser, currentUserId, roomRef }
     }
 
     // Add current user
-    updates[`users/${currentUserId}/name`] = currentUser.displayName as string
-    updates[`users/${currentUserId}/hasVoted`] = false
-    updates[`users/${currentUserId}/vote`] = 0
+    updates[`users/${user.currentUserId}/name`] = user.username as string
+    updates[`users/${user.currentUserId}/hasVoted`] = false
+    updates[`users/${user.currentUserId}/vote`] = 0
 
     await asyncQueue.add(() => update(roomRef, updates))
   } catch (error) {

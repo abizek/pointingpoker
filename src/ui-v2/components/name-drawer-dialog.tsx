@@ -3,7 +3,7 @@ import { z } from "zod"
 import { UseFormReturn, useForm } from "react-hook-form"
 import { getStore } from "@/hooks/store"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { currentUser } from "@/utils/firebase"
+import { user } from "@/utils/firebase"
 import { setName } from "@/utils/rtdb"
 import { createExternalStore } from "@/utils/create-external-store"
 import {
@@ -51,7 +51,7 @@ const formSchema = z.object({
     })
     .refine(
       (val) => {
-        if (val === currentUser.displayName) return true
+        if (val === user.username) return true
 
         const { users } = getStore()
         return !Object.values(users)
@@ -72,7 +72,7 @@ export function NameDrawerDialog() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: currentUser.displayName ?? "",
+      username: user.username ?? "",
     },
   })
 

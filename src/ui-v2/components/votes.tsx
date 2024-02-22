@@ -1,6 +1,6 @@
 import { useVotes } from "@/hooks/votes"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
-import { currentUserId } from "@/utils/firebase"
+import { user } from "@/utils/firebase"
 import { getCurrentVote } from "@/hooks/store"
 import { Name } from "./name"
 import { Check } from "lucide-react"
@@ -25,7 +25,7 @@ export function Votes() {
             <div>
               {display
                 ? vote
-                : hasVoted && id === currentUserId
+                : hasVoted && id === user.currentUserId
                   ? getCurrentVote()
                   : "?"}
             </div>

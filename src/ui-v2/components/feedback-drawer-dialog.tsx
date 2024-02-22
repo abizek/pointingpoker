@@ -7,7 +7,7 @@ import ky from "ky"
 import LogRocket from "logrocket"
 import { createExternalStore } from "@/utils/create-external-store"
 import { cn } from "@/utils/cn"
-import { currentUser } from "@/utils/firebase"
+import { user } from "@/utils/firebase"
 import {
   Form,
   FormControl,
@@ -62,7 +62,7 @@ export function FeedbackDrawerDialog() {
     try {
       await ky.post("https://feedback.abizek.workers.dev", {
         json: {
-          text: "From " + currentUser.displayName + ": " + values.text,
+          text: "From " + user.username + ": " + values.text,
         },
       })
     } catch (error) {

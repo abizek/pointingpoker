@@ -1,6 +1,6 @@
 import { getCurrentVote } from "../../hooks/store"
 import { useVotes } from "../../hooks/votes"
-import { currentUserId } from "../../utils/firebase"
+import { user } from "../../utils/firebase"
 import { VoteRow } from "./vote-row.jsx"
 
 export function Votes() {
@@ -14,9 +14,9 @@ export function Votes() {
           key={id}
           name={users[id].name}
           // To show vote of current user without updating db
-          vote={id === currentUserId ? getCurrentVote() : users[id].vote}
+          vote={id === user.currentUserId ? getCurrentVote() : users[id].vote}
           hasVoted={users[id].hasVoted}
-          display={display || id === currentUserId}
+          display={display || id === user.currentUserId}
         />
       ))}
     </div>

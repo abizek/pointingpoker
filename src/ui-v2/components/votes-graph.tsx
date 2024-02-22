@@ -9,7 +9,7 @@ import {
   YAxis,
 } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
-import { currentUserId } from "@/utils/firebase"
+import { user } from "@/utils/firebase"
 import { getCurrentVote } from "@/hooks/store"
 import { useVotes } from "@/hooks/votes"
 import { useVoteStats } from "@/hooks/vote-stats"
@@ -25,7 +25,7 @@ export default function VotesGraph() {
 
       if (display) {
         label = vote
-      } else if (id === currentUserId && hasVoted) {
+      } else if (id === user.currentUserId && hasVoted) {
         vote = label = getCurrentVote()
       } else {
         label = "?"

@@ -9,20 +9,20 @@ import { updateProfile } from "@firebase/auth"
 import LogRocket from "logrocket"
 import { asyncQueue } from "../hooks/loading"
 import { deferVoteUpdate, getStore, setCurrentVote } from "../hooks/store"
-import { currentUser, currentUserId, db, roomRef } from "./firebase"
+import { db, roomRef, user } from "./firebase"
 import { roomId } from "./room-id"
 
 export async function vote(selectedOption: number): Promise<void> {
   try {
     // To defer vote update until everyone has voted
-    deferVoteUpdate(`users/${currentUserId}/vote`, selectedOption)
+    deferVoteUpdate(`users/${user.currentUserId}/vote`, selectedOption)
     // To show the current user their vote
     setCurrentVote(selectedOption)
 
     const updates: Partial<RoomUpdates> = {
       endTime: serverTimestamp(),
     }
-    updates[`users/${currentUserId}/hasVoted`] = true
+    updates[`users/${user.currentUserId}/hasVoted`] = true
     await updateDb(updates)
   } catch (error) {
     if (error instanceof Error) {
@@ -99,17 +99,17 @@ export async function createVoteOptions(newVoteOptions: {
 
 export async function setName(name: string): Promise<void> {
   try {
-    if (!name || name === currentUser.displayName) {
+    if (!name || name === user.username) {
       return
     }
 
-    LogRocket.identify(currentUserId, { name })
+    LogRocket.identify(user.currentUserId, { name })
     await asyncQueue.addAll([
       () =>
-        updateProfile(currentUser, {
+        updateProfile(user.currentUser, {
           displayName: name,
         }),
-      () => update(roomRef, { [`users/${currentUserId}/name`]: name }),
+      () => update(roomRef, { [`users/${user.currentUserId}/name`]: name }),
     ])
   } catch (error) {
     if (error instanceof Error) {
@@ -144,13 +144,13 @@ export async function updateDb(updates: Partial<RoomUpdates>): Promise<void> {
 export async function setupReconnection(): Promise<void> {
   try {
     const updates: Partial<RoomUpdates> = {}
-    updates[`users/${currentUserId}/name`] = currentUser.displayName as string
-    updates[`users/${currentUserId}/hasVoted`] = false
-    updates[`users/${currentUserId}/vote`] = 0
+    updates[`users/${user.currentUserId}/name`] = user.username as string
+    updates[`users/${user.currentUserId}/hasVoted`] = false
+    updates[`users/${user.currentUserId}/vote`] = 0
     await updateDb(updates)
     // Delete user from db on disconnect
     await onDisconnect(
-      ref(db, `rooms/${roomId}/users/${currentUserId}`),
+      ref(db, `rooms/${roomId}/users/${user.currentUserId}`),
     ).remove()
   } catch (error) {
     if (error instanceof Error) {
